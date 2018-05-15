@@ -16,6 +16,7 @@ final class TodoController {
     func create(_ req: Request) throws -> Future<Todo> {
 
         return try req.content.decode(Todo.self).flatMap { todo in
+			print(todo)
 			if let id = todo.id {
 				return try Todo.find(id, on: req).flatMap { item in
 					guard item != nil else {
