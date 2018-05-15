@@ -9,8 +9,20 @@ final class TodoController {
 
     /// Saves a decoded `Todo` to the database.
     func create(_ req: Request) throws -> Future<Todo> {
+
         return try req.content.decode(Todo.self).flatMap { todo in
-            return todo.save(on: req)
+			if let id = todo.id {
+				return try Todo.find(id, on: req).flatMap { item in
+					guard item != nil else {
+						throw Abort(.notFound, reason: "Could not find item to update.")
+					}
+					return todo.save(on: req)
+				}
+
+			} else {
+				return todo.save(on: req)
+			}
+			
         }
     }
 

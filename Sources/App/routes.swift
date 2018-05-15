@@ -7,6 +7,9 @@ public func routes(_ router: Router) throws {
         return "Hello, world!"
     }
 
+    router.get("/") { req in
+        return "Hello, (root)world!"
+    }
     // Example of configuring a controller
     let todoController = TodoController()
     router.get("todos", use: todoController.index)
