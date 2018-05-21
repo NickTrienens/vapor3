@@ -22,6 +22,12 @@ public class Client {
 				.debugBody()
 				.mapWithError([Todo].self)
 	}
+	func postTodo(_ todo: Todo) -> PrimitiveSequence<SingleTrait, Todo> {
+		return service.rx
+				.request(.postTodo(todo))
+				.debugBody()
+				.mapWithError(Todo.self)
+	}
 }
 
 struct TodoTarget: TargetType {
@@ -44,8 +50,11 @@ struct TodoTarget: TargetType {
 		self.task = task
 	}
 	
-	static func getTodos()->TodoTarget {
+	static func getTodos() -> TodoTarget {
 		return TodoTarget(method: .get, path: "todos/")
+	}
+	static func postTodo(_ todo: Todo) -> TodoTarget {
+		return TodoTarget(method: .post, path: "todos/", task: .requestJSONEncodable(todo))
 	}
 }
 

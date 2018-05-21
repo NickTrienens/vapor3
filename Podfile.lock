@@ -1,0 +1,57 @@
+PODS:
+  - Alamofire (4.7.2)
+  - Differentiator (3.0.2)
+  - DynamicBlurView (2.0.2)
+  - Moya/Core (11.0.2):
+    - Alamofire (~> 4.1)
+    - Result (~> 3.0)
+  - Moya/RxSwift (11.0.2):
+    - Moya/Core
+    - RxSwift (~> 4.0)
+  - PopupDialog (0.7.1):
+    - DynamicBlurView (~> 2.0)
+  - Result (3.2.4)
+  - RxCocoa (4.1.2):
+    - RxSwift (~> 4.0)
+  - RxDataSources (3.0.2):
+    - Differentiator (~> 3.0)
+    - RxCocoa (~> 4.0)
+    - RxSwift (~> 4.0)
+  - RxSwift (4.1.2)
+  - SnapKit (4.0.0)
+
+DEPENDENCIES:
+  - Moya/RxSwift (~> 11.0)
+  - PopupDialog (~> 0.7)
+  - RxCocoa
+  - RxDataSources
+  - SnapKit
+
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - Alamofire
+    - Differentiator
+    - DynamicBlurView
+    - Moya
+    - PopupDialog
+    - Result
+    - RxCocoa
+    - RxDataSources
+    - RxSwift
+    - SnapKit
+
+SPEC CHECKSUMS:
+  Alamofire: e4fa87002c137ba2d8d634d2c51fabcda0d5c223
+  Differentiator: a87be69eba49ec4ab460c7671143ee3a9eececfd
+  DynamicBlurView: aa6db4defc6e537eb86fc5e58dd3991666178399
+  Moya: a725035953bc1c0eb1be505ab903984501d82440
+  PopupDialog: 39598b7d41719f5c025b4b70e62728bae7734fef
+  Result: d2d07204ce72856f1fd9130bbe42c35a7b0fea10
+  RxCocoa: d88ba0f1f6abf040011a9eb4b539324fc426843a
+  RxDataSources: cb7c31e652a87ebb919da45f716bbb87b3765f6b
+  RxSwift: e49536837d9901277638493ea537394d4b55f570
+  SnapKit: a42d492c16e80209130a3379f73596c3454b7694
+
+PODFILE CHECKSUM: 6141864995fe8536b8aba4c6feabfe8ab6d64f74
+
+COCOAPODS: 1.5.2
