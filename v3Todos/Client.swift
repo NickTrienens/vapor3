@@ -58,28 +58,6 @@ struct TodoTarget: TargetType {
 		coder.dateEncodingStrategy = .iso8601
 		return TodoTarget(method: .post, path: "todos/", task: .requestCustomJSONEncodable(todo, encoder: coder))
 	}
-	
-//
-//	static var dateStr: JSONDecoder.DateDecodingStrategy = {
-//		JSONDecoder.DateDecodingStrategy.custom({ (decoder) -> Date in
-//			let container = try decoder.singleValueContainer()
-//			let dateStr = try container.decode(String.self)
-//
-//			let formatter = DateFormatter()
-//			formatter.calendar = Calendar(identifier: .iso8601)
-//			formatter.locale = Locale(identifier: "en_US_POSIX")
-//			formatter.timeZone = TimeZone(secondsFromGMT: 0)
-//			formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSXXXXX"
-//			if let date = formatter.date(from: dateStr) {
-//				return date
-//			}
-//			formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssXXXXX"
-//			if let date = formatter.date(from: dateStr) {
-//				return date
-//			}
-//			throw DateError.invalidDate
-//		})
-//	}
 }
 
 

@@ -48,6 +48,12 @@ extension Array {
 			return (element, t)
 		}
 	}
+	
+	mutating func replace(index: Int, with newValue: Element) {
+		if count > index {
+			self[index] = newValue
+		}
+	}
 }
 
 extension Array where Element: Hashable {
@@ -120,4 +126,6 @@ extension Array where Iterator.Element: Equatable {
 		}
 		return newArr
 	}
+	
+
 }

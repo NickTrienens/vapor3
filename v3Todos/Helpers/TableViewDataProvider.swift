@@ -21,6 +21,8 @@ class TableViewDataProvider<Model, Cell: TableCell<Model>>: NSObject, UITableVie
 
     var items = Variable<[Model]>([])
     let itemSelected = PublishSubject<Model>()
+	let itemsReoreded = PublishSubject<[Model]>
+
     var selectedItems = Variable<[Model]>([])
 
     let contentOffset = PublishSubject<CGPoint>()
@@ -83,11 +85,11 @@ class TableViewDataProvider<Model, Cell: TableCell<Model>>: NSObject, UITableVie
 	func tableView(_ tableView: UITableView, moveRowAt indexPath: IndexPath, to: IndexPath) -> Void {
 		var reOrdered = self.items.value
 		
-		let swap1 = reOrdered.elementAt(indexPath.row)
-		let swap2 = reOrdered.elementAt(to.row)
-		
-		
-		//items
+		if let swap1 = reOrdered.elementAt(indexPath.row), let swap2 = reOrdered.elementAt(to.row) {
+			reOrdered.replace(index: indexPath.row, with: swap2)
+			reOrdered.replace(index: to.row, with: swap1)
+		}
+		self.itemsReoreded.onNext( reOrdered )
 	}
 	
 	func element(_ indexPath: IndexPath) -> Model? {
