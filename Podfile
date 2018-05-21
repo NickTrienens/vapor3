@@ -12,7 +12,7 @@ target 'v3Todos' do
 
   # Pods for v3 todos
   pod 'RxCocoa'
-  pod 'RxDataSources'
+  pod 'RxFuzz'
   pod 'SnapKit'
   pod 'Moya/RxSwift', '~> 11.0'
   pod 'PopupDialog', '~> 0.7'

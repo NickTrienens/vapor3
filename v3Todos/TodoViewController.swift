@@ -17,6 +17,16 @@ class TodoViewController: BaseViewController {
 	
 	let todoDataProvider: TableViewDataProvider<Todo, TodoTableViewCell>
 
+	lazy var refreshControl: UIRefreshControl = {
+		let refreshControl = UIRefreshControl()
+		refreshControl.addTarget(self, action:
+			#selector(TodoViewController.handleRefresh(_:)),
+								 for: UIControlEvents.valueChanged)
+		refreshControl.tintColor = UIColor.red
+		
+		return refreshControl
+	}()
+	
 	public init(_ client: Client) {
 		todoDataProvider = TableViewDataProvider<Todo, TodoTableViewCell>(with: tableView)
 		todoDataProvider.rowHeight = 50
@@ -39,13 +49,21 @@ class TodoViewController: BaseViewController {
 		
 		
 		let addButton: UIBarButtonItem = UIBarButtonItem( title: "+", style: .plain, target: nil, action: nil)
-		self.navigationItem.rightBarButtonItem = addButton
+		self.navigationItem.leftBarButtonItem = addButton
 		addButton.rx.tap
 			.subscribe( { _ in
 				self.viewModel.addTodo()
 			})
 			.disposed(by: disposeBag)
 
+		let editButton: UIBarButtonItem = UIBarButtonItem( title: "Edit", style: .plain, target: nil, action: nil)
+		self.navigationItem.rightBarButtonItem = editButton
+		editButton.rx.tap
+			.subscribe( { _ in
+				self.viewModel.toggleEditting()
+			})
+			.disposed(by: disposeBag)
+		
 		addTableView()
 		setupBindings()
 		
@@ -58,6 +76,8 @@ class TodoViewController: BaseViewController {
 
 	func addTableView() {
 		view.addSubview(tableView)
+		tableView.addSubview(self.refreshControl)
+
 		tableView.snp.makeConstraints { make in
 			make.edges.equalTo(self.view)
 		}
@@ -66,6 +86,23 @@ class TodoViewController: BaseViewController {
 		viewModel.items
 			.bind(to: todoDataProvider.items)
 			.disposed(by: disposeBag)
+		
+		viewModel.loadingStatus
+			.filter { $0.active == false }
+			.subscribe( onNext: { _ in
+				self.refreshControl.endRefreshing()
+			})
+			.disposed(by: disposeBag)
+		
+		viewModel.editting
+			.subscribe( onNext: { editting in
+				self.tableView.isEditing = editting
+			})
+			.disposed(by: disposeBag)
+	}
+	
+	@objc func handleRefresh(_ refreshControl: UIRefreshControl) {
+		viewModel.loadData()
 	}
 	
 }

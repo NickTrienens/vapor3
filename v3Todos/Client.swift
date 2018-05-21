@@ -54,8 +54,32 @@ struct TodoTarget: TargetType {
 		return TodoTarget(method: .get, path: "todos/")
 	}
 	static func postTodo(_ todo: Todo) -> TodoTarget {
-		return TodoTarget(method: .post, path: "todos/", task: .requestJSONEncodable(todo))
+		let coder = JSONEncoder()
+		coder.dateEncodingStrategy = .iso8601
+		return TodoTarget(method: .post, path: "todos/", task: .requestCustomJSONEncodable(todo, encoder: coder))
 	}
+	
+//
+//	static var dateStr: JSONDecoder.DateDecodingStrategy = {
+//		JSONDecoder.DateDecodingStrategy.custom({ (decoder) -> Date in
+//			let container = try decoder.singleValueContainer()
+//			let dateStr = try container.decode(String.self)
+//
+//			let formatter = DateFormatter()
+//			formatter.calendar = Calendar(identifier: .iso8601)
+//			formatter.locale = Locale(identifier: "en_US_POSIX")
+//			formatter.timeZone = TimeZone(secondsFromGMT: 0)
+//			formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSXXXXX"
+//			if let date = formatter.date(from: dateStr) {
+//				return date
+//			}
+//			formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssXXXXX"
+//			if let date = formatter.date(from: dateStr) {
+//				return date
+//			}
+//			throw DateError.invalidDate
+//		})
+//	}
 }
 
 
@@ -72,13 +96,15 @@ extension PrimitiveSequence where TraitType == SingleTrait, ElementType == Respo
 	
 	/// Maps received data at key path into a Decodable object. If the conversion fails, the signal errors.
 	public func mapWithError<D: Decodable>(_ type: D.Type, atKeyPath keyPath: String? = nil, using decoder: JSONDecoder = JSONDecoder(), failsOnEmptyData: Bool = true) -> Single<D> {
+
+		decoder.dateDecodingStrategy = .iso8601
 		return flatMap { response -> Single<D> in
 			
 			do {
 				return Single.just(try response.map(type, atKeyPath: keyPath, using: decoder, failsOnEmptyData: failsOnEmptyData))
 			} catch {
 				// try to map to an error message form the server
-				if let serverError = try? response.map(ServerError.self, atKeyPath: "error", using: decoder, failsOnEmptyData: failsOnEmptyData) {
+				if let serverError = try? response.map(ServerError.self, using: decoder, failsOnEmptyData: failsOnEmptyData) {
 					throw TodoError.serverError(error: serverError)
 				}
 				throw(error)
@@ -94,16 +120,16 @@ enum TodoError: Error {
 }
 struct ServerError : Codable {
 	
-	var code: Int
-	var message: String
+	var error: Bool
+	var reason: String
 	
 	func convertToNSError() -> NSError {
 		
 		let userInfo: [AnyHashable: Any] = [
-			NSLocalizedDescriptionKey :  NSLocalizedString("Error", value: message, comment: ""),
-			NSLocalizedFailureReasonErrorKey : NSLocalizedString("Error", value: message, comment: "")
+			NSLocalizedDescriptionKey :  NSLocalizedString("Error", value: reason, comment: ""),
+			NSLocalizedFailureReasonErrorKey : NSLocalizedString("Error", value: reason, comment: "")
 		]
-		return NSError(domain: "HTTPError", code: code, userInfo: userInfo as? [String : Any])
+		return NSError(domain: "HTTPError", code: 505, userInfo: userInfo as? [String : Any])
 	}
 }
 

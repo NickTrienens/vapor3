@@ -72,6 +72,28 @@ class TableViewDataProvider<Model, Cell: TableCell<Model>>: NSObject, UITableVie
         }
     }
 
+	func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+		return true
+	}
+
+	func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
+		return true
+	}
+	
+	func tableView(_ tableView: UITableView, moveRowAt indexPath: IndexPath, to: IndexPath) -> Void {
+		var reOrdered = self.items.value
+		
+		let swap1 = reOrdered.elementAt(indexPath.row)
+		let swap2 = reOrdered.elementAt(to.row)
+		
+		
+		//items
+	}
+	
+	func element(_ indexPath: IndexPath) -> Model? {
+       return items.value.elementAt(indexPath.row)
+	}
+	//func tableView(_ tableView: UITableView, move
 }
 //
 //class SectionedTableHeader<T>: UIView {

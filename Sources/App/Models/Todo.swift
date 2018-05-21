@@ -1,4 +1,6 @@
 
+import Foundation
+
 /// A single entry of a Todo list.
 final class Todo: Codable {
     /// The unique identifier for this `Todo`.
@@ -8,11 +10,13 @@ final class Todo: Codable {
     var title: String
 
 	var creator: String
+	var createdAt: Date
 	
     /// Creates a new `Todo`.
-	init(id: Int? = nil, title: String, creator:String) {
+	init(id: Int? = nil, title: String, creator:String, createdAt: Date = Date()) {
         self.id = id
         self.title = title
 		self.creator = creator
+		self.createdAt = createdAt
     }
 }
