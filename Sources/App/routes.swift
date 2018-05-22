@@ -14,17 +14,14 @@ public func routes(_ router: Router) throws {
 	 }
 
 	
-//	router.get("hello/", String.parameter ) { req in
-//		//print (req.parameters)
-//		let name = "nick"
-//			//try req.parameters.next(String.self)
-//
-//		return "Hello/, \(name)!"
-//	}
+	router.get("hello/", String.parameter ) { req -> String in
+		//print (req.parameters)
+		let name = "nick"
+			//try req.parameters.next(String.self)
 
-    router.get("/") { req in
-        return "Hello, (root)world!"
-    }
+		return "Hello/, \(name)!"
+	}
+
     // Example of configuring a controller
     let todoController = TodoController()
 	router.get("todos", use: { req -> Future<[Todo]> in
