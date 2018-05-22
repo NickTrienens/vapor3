@@ -15,13 +15,18 @@ class TableCell<T>: UITableViewCell {
     func update(with data: Model) { }
 }
 
+enum UpdateAction: Int {
+	case delete
+	case reorder
+}
+
 class TableViewDataProvider<Model, Cell: TableCell<Model>>: NSObject, UITableViewDelegate, UITableViewDataSource {
 
     let disposeBag = DisposeBag()
 
     var items = Variable<[Model]>([])
     let itemSelected = PublishSubject<Model>()
-	let itemsReoreded = PublishSubject<[Model]>()
+	let itemsUpdated = PublishSubject<(UpdateAction, [Model])>()
 
     var selectedItems = Variable<[Model]>([])
 
@@ -76,6 +81,16 @@ class TableViewDataProvider<Model, Cell: TableCell<Model>>: NSObject, UITableVie
         }
     }
 
+	func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCellEditingStyle {
+		return .delete
+	}
+	
+	func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+		if let deleted = items.value.elementAt(indexPath.row) {
+			self.itemsUpdated.onNext( (.delete, [deleted]) )
+		}
+	}
+	
 	func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
 		return true
 	}
@@ -85,107 +100,17 @@ class TableViewDataProvider<Model, Cell: TableCell<Model>>: NSObject, UITableVie
 	}
 	
 	func tableView(_ tableView: UITableView, moveRowAt indexPath: IndexPath, to: IndexPath) -> Void {
-		var reOrdered = self.items.value
+		var reordered = self.items.value
 		
-		if let swap1 = reOrdered.elementAt(indexPath.row), let swap2 = reOrdered.elementAt(to.row) {
-			reOrdered.replace(index: indexPath.row, with: swap2)
-			reOrdered.replace(index: to.row, with: swap1)
+		if let swap1 = reordered.elementAt(indexPath.row), let swap2 = reordered.elementAt(to.row) {
+			reordered.replace(index: indexPath.row, with: swap2)
+			reordered.replace(index: to.row, with: swap1)
 		}
-		self.itemsReoreded.onNext( reOrdered )
+		self.itemsUpdated.onNext( (.reorder, reordered ))
 	}
 	
 	func element(_ indexPath: IndexPath) -> Model? {
        return items.value.elementAt(indexPath.row)
 	}
-	//func tableView(_ tableView: UITableView, move
 }
-//
-//class SectionedTableHeader<T>: UIView {
-//    typealias SectionData = T
-//    // MARK: - Config -
-//    func update(with data: SectionData) { }
-//}
-//
-////class SectionedTableCell<T>: UITableViewCell {
-////    typealias Model = T
-////    // MARK: - Config -
-////    func update(with data: Model) { }
-////}
-//
-//class SectionedTableViewDataProvider< HeaderModel, Model, HeaderViewType: SectionedTableHeader<HeaderModel>, CellType: TableCell<Model> >: NSObject, UITableViewDelegate, UITableViewDataSource {
-//    
-//    let disposeBag = DisposeBag()
-//    
-//	let sections = Variable<[SectionData<HeaderModel, Model>]>([])
-//    let itemSelected = PublishSubject<Model>()
-//    var selectedItems = BehaviorSubject<[Model]>(value: [])
-//    
-//    let contentOffset = PublishSubject<CGPoint>()
-//    var momentarySelection: Bool = true
-//    var rowHeight = UITableViewAutomaticDimension
-//    var headerHeight: CGFloat = 45.0
-//	
-//    init(with tableView: UITableView) {
-//        super.init()
-//        tableView.registerClassForCellReuse(CellType.self)
-//        tableView.delegate = self
-//        tableView.dataSource = self
-//        tableView.rowHeight = rowHeight
-//        
-//        sections.asObservable()
-//            .subscribe(
-//                onNext: { sections in
-//                    tableView.reloadData()
-//                }
-//            )
-//            .disposed(by: disposeBag)
-//    }
-//    
-//    // MARK: - TableView Delegate & Datasource _
-//    func numberOfSections(in tableView: UITableView) -> Int {
-//        return sections.value.count
-//    }
-//    
-//    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-//        return sections.value.elementAt(section)?.items.count ?? 0
-//    }
-//    
-//    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-//        return rowHeight
-//    }
-//    
-//    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-//        let cell = tableView.dequeueReusableCell(withIdentifier: String( describing: CellType.self), for: indexPath)
-//        if let cell = cell as? CellType, let data: Model = element(indexPath) {
-//            cell.update(with: data)
-//        }
-//        return cell
-//    }
-//    
-//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        if momentarySelection {
-//            tableView.deselectRow(at: indexPath, animated: true)
-//        }
-//        if let data = element(indexPath) {
-//            itemSelected.onNext( data )
-//        }
-//    }
-//    
-//    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-//        return headerHeight
-//    }
-//    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-//        let headerView = HeaderViewType()
-//        if let headerData: HeaderModel = headerData(section) {
-//            headerView.update(with: headerData)
-//        }
-//        return headerView
-//    }
-//    
-//    func element(_ indexPath: IndexPath) -> Model? {
-//        return sections.value.elementAt(indexPath.section)?.items.elementAt(indexPath.row)
-//    }
-//    func headerData(_ section: Int) -> HeaderModel? {
-//        return sections.value.elementAt(section)?.headerItem
-//    }
-//}
+

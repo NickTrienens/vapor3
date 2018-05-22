@@ -21,7 +21,7 @@ final class Todo: Codable, CustomStringConvertible, Equatable {
     }
 	
 	public var description: String {
-		return "\(title) \(creator) @ \(createdAt)"
+		return "`\(title)` \(creator) @ \(createdAt)"
 	}
 	
 	public static func == (lhs: Todo, rhs: Todo) -> Bool {

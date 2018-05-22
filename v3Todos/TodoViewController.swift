@@ -48,7 +48,6 @@ class TodoViewController: BaseViewController {
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
-		
 		let addButton: UIBarButtonItem = UIBarButtonItem( title: "+", style: .plain, target: nil, action: nil)
 		self.navigationItem.leftBarButtonItem = addButton
 		addButton.rx.tap
@@ -99,6 +98,19 @@ class TodoViewController: BaseViewController {
 			.subscribe( onNext: { editting in
 				self.tableView.isEditing = editting
 			})
+			.disposed(by: disposeBag)
+		
+		
+		todoDataProvider.itemsUpdated
+			.subscribe(
+				onNext: { action, list in
+					if action == .reorder {
+						self.viewModel.reorder(list)
+					} else {
+						self.viewModel.delete(list)
+					}
+				}
+			)
 			.disposed(by: disposeBag)
 		
 		todoDataProvider

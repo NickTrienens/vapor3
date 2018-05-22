@@ -83,6 +83,32 @@ class TodoViewModel {
 			.disposed(by: disposeBag)
 	}
 	
+	func reorder(_ todos: [Todo]) {
+		print("reorder todo")
+		
+	}
+	
+	func delete(_ todos: [Todo]) {
+		print("delete todo")
+		editingStatus.accept(.loading)
+		
+		var deletes = [Observable<Void>]()
+		
+		for todo in todos {
+			deletes.append(client.deleteTodo(todo).asObservable())
+		}
+		
+		Observable.combineLatest(deletes)
+			.subscribe(onNext: { _ in
+					self.editingStatus.accept(.none)
+					self.loadData()
+				}, onError: { err in
+					self.editingStatus.accept(.error(error: err))
+			})
+			.disposed(by: disposeBag)
+		
+	}
+	
 	func setupBindings() {
 		edittableTodo
 			.filterNil()

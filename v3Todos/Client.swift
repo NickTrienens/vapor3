@@ -28,6 +28,17 @@ public class Client {
 				.debugBody()
 				.mapWithError(Todo.self)
 	}
+	
+	func deleteTodo(_ todo: Todo) -> PrimitiveSequence<SingleTrait, Void> {
+		guard let target = TodoTarget.deleteTodo(todo) else {
+			return PrimitiveSequence<SingleTrait, Void>.error(TodoError.requestInvalid)
+		}
+		return service.rx
+			.request(target)
+			.debugBody()
+			.filterSuccessfulStatusCodes()
+			.map { _ in return () }
+	}
 }
 
 struct TodoTarget: TargetType {
@@ -57,6 +68,10 @@ struct TodoTarget: TargetType {
 		let coder = JSONEncoder()
 		coder.dateEncodingStrategy = .iso8601
 		return TodoTarget(method: .post, path: "todos/", task: .requestCustomJSONEncodable(todo, encoder: coder))
+	}
+	static func deleteTodo(_ todo: Todo) -> TodoTarget? {
+		guard let tid = todo.id else { return nil }
+		return TodoTarget(method: .delete, path: "todos/\(tid)")
 	}
 }
 
@@ -93,6 +108,7 @@ extension PrimitiveSequence where TraitType == SingleTrait, ElementType == Respo
 
 enum TodoError: Error {
 	case any
+	case requestInvalid
 	case serverError(error: ServerError)
 	case valueUncastable
 }
