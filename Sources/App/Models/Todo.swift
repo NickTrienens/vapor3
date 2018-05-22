@@ -2,7 +2,7 @@
 import Foundation
 
 /// A single entry of a Todo list.
-final class Todo: Codable {
+final class Todo: Codable, CustomStringConvertible, Equatable {
     /// The unique identifier for this `Todo`.
     var id: Int?
 
@@ -19,4 +19,13 @@ final class Todo: Codable {
 		self.creator = creator
 		self.createdAt = createdAt
     }
+	
+	public var description: String {
+		return "\(title) \(creator) @ \(createdAt)"
+	}
+	
+	public static func == (lhs: Todo, rhs: Todo) -> Bool {
+		return lhs.id == rhs.id
+	}
+
 }

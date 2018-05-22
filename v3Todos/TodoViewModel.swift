@@ -15,15 +15,18 @@ class TodoViewModel {
 	let client: Client
 	let deviceName: String
 	
-	
 	let loadingStatus = BehaviorRelay<LoadStatus>(value: .none)
 	let items = BehaviorRelay<[Todo]>(value: [])
 	let editting = BehaviorRelay<Bool>(value: false)
-
+	
+	let edittableTodo = BehaviorRelay<Todo?>(value: nil)
+	let editingStatus = BehaviorRelay<LoadResult<Bool>>(value: .none)
+	
 	init(_ client: Client, deviceName: String) {
 		self.client = client
 		self.deviceName = deviceName
 		loadData()
+		setupBindings()
 	}
 	
 	func toggleEditting() {
@@ -59,7 +62,32 @@ class TodoViewModel {
 				onError: { err in
 					print(err)
 					self.loadingStatus.accept(.error(error: err))
-
+			})
+			.disposed(by: disposeBag)
+	}
+	
+	func saveTodo(_ todo: Todo) {
+		print("save todo")
+		editingStatus.accept(.loading)
+		client.postTodo(todo)
+			.subscribe(
+				onSuccess: { todo in
+					print(todo)
+					self.items.accept( self.items.value.replace(todo) )
+					self.editingStatus.accept(.success(value: true))
+				},
+				onError: { err in
+					print(err)
+					self.editingStatus.accept(.error(error: err))
+			})
+			.disposed(by: disposeBag)
+	}
+	
+	func setupBindings() {
+		edittableTodo
+			.filterNil()
+			.subscribe(onNext: { todo in
+				self.saveTodo(todo)
 			})
 			.disposed(by: disposeBag)
 	}

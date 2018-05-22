@@ -9,6 +9,7 @@ import UIKit
 import RxSwift
 import SnapKit
 import RxCocoa
+import PopupDialog
 
 class TodoViewController: BaseViewController {
 	
@@ -99,6 +100,40 @@ class TodoViewController: BaseViewController {
 				self.tableView.isEditing = editting
 			})
 			.disposed(by: disposeBag)
+		
+		todoDataProvider
+			.itemSelected
+			.subscribe(onNext: { [weak self] todo in
+				guard let `self` = self else { return }
+
+				//make a new obserevable with the our todo
+				let obs = BehaviorRelay<Todo>(value: todo)
+				
+				// bind the view model's edittableTodo to this new stream
+				obs.skip(1)
+					.bind(to: self.viewModel.edittableTodo)
+					.disposed(by: self.disposeBag)
+				
+				// Pass the new stream to the editting viewController, when it nexts a new value the view model will save and dismiss
+				let vc = TodoEditorViewController(todo: obs )
+				let popup = PopupDialog(viewController: vc, preferredWidth: 300, hideStatusBar: true)
+				self.present(popup, animated: true, completion: nil)
+		
+			})
+			.disposed(by: disposeBag)
+		
+		
+		viewModel.editingStatus
+			.filter {
+				if case .success(_) = $0 {
+					return true
+				}
+				return false
+			}
+			.subscribe(onNext: { [weak self] todo in
+				guard let `self` = self else { return }
+				self.dismiss(animated: true, completion: nil)
+			}).disposed(by: disposeBag)
 	}
 	
 	@objc func handleRefresh(_ refreshControl: UIRefreshControl) {

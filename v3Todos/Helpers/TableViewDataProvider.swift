@@ -21,7 +21,7 @@ class TableViewDataProvider<Model, Cell: TableCell<Model>>: NSObject, UITableVie
 
     var items = Variable<[Model]>([])
     let itemSelected = PublishSubject<Model>()
-	let itemsReoreded = PublishSubject<[Model]>
+	let itemsReoreded = PublishSubject<[Model]>()
 
     var selectedItems = Variable<[Model]>([])
 
@@ -36,10 +36,12 @@ class TableViewDataProvider<Model, Cell: TableCell<Model>>: NSObject, UITableVie
         tableView.dataSource = self
         tableView.rowHeight = rowHeight
 
-        items.asObservable().subscribe(
-            onNext: { _ in
-                tableView.reloadData()
-        })
+        items.asObservable()
+			.subscribe(
+            	onNext: { _ in
+                	tableView.reloadData()
+        		}
+			)
             .disposed(by: disposeBag)
     }
 
