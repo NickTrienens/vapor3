@@ -1,5 +1,6 @@
 PODS:
   - Alamofire (4.7.2)
+  - ChainableAnimations (3.0.1)
   - DynamicBlurView (2.0.2)
   - Moya/Core (11.0.2):
     - Alamofire (~> 4.1)
@@ -18,6 +19,7 @@ PODS:
   - SnapKit (4.0.0)
 
 DEPENDENCIES:
+  - ChainableAnimations (~> 3.0.1)
   - Moya/RxSwift (~> 11.0)
   - PopupDialog (~> 0.7)
   - RxCocoa
@@ -29,6 +31,7 @@ SPEC REPOS:
     - RxFuzz
   https://github.com/cocoapods/specs.git:
     - Alamofire
+    - ChainableAnimations
     - DynamicBlurView
     - Moya
     - PopupDialog
@@ -39,6 +42,7 @@ SPEC REPOS:
 
 SPEC CHECKSUMS:
   Alamofire: e4fa87002c137ba2d8d634d2c51fabcda0d5c223
+  ChainableAnimations: 12e0a88e72fb554ad4cda38c40474e4d65c972a2
   DynamicBlurView: aa6db4defc6e537eb86fc5e58dd3991666178399
   Moya: a725035953bc1c0eb1be505ab903984501d82440
   PopupDialog: 39598b7d41719f5c025b4b70e62728bae7734fef
@@ -48,6 +52,6 @@ SPEC CHECKSUMS:
   RxSwift: e49536837d9901277638493ea537394d4b55f570
   SnapKit: a42d492c16e80209130a3379f73596c3454b7694
 
-PODFILE CHECKSUM: 7ea9d5a5381819f9df809093afb1bf4424676cc4
+PODFILE CHECKSUM: bd41fe2c3c6f2fef30a411a16af703589b00c612
 
 COCOAPODS: 1.5.2

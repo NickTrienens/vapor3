@@ -16,5 +16,5 @@ target 'v3Todos' do
   pod 'SnapKit'
   pod 'Moya/RxSwift', '~> 11.0'
   pod 'PopupDialog', '~> 0.7'
-
+  pod 'ChainableAnimations', '~> 3.0.1'
 end
